@@ -1,0 +1,276 @@
+/**
+ * Daniel Jimenez
+ * 202410 Software Development I CEN-3024C-14835
+ * 10/12/2023
+ *
+ * Class: LMSApplication
+ * Description: Library Management System for removing and adding books by title and barcode.
+ *              This class contains the main method and handles user interactions.
+ */
+package Books;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class LMSApplication {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Library library = new Library();
+
+        // Display program information
+        System.out.println("Library Management System by Daniel Jimenez");
+        System.out.println("Course: Software Development I CEN-3024C-14835");
+        System.out.println("Date: 10/07/2023");
+
+        // Prepopulate the library with a few books
+        library.addBook(new Book("Harry Potter and the Sorcerer's Stone", "J.K. Rowling", "1234", "Fantasy"));
+        library.addBook(new Book("One Piece", "Eiichiro Oda", "5678", "Shonen Manga"));
+        library.addBook(new Book("Pokemon", "Satoshi Tajiri", "9012", "Adventure1"));
+
+
+        // Ask the user for a file name and read books from the file (assuming you'll implement this later)
+        System.out.print("Enter the file name: ");
+        String fileName = scanner.nextLine();
+        loadBooksFromFile(library, fileName);
+
+        // Display the initial database
+        System.out.println("Initial Library Database:");
+        library.displayDatabase();
+
+        // Menu for user interactions
+        while (true) {
+            System.out.println("\nChoose an option:");
+            System.out.println("1. Add a new book");
+            System.out.println("2. Remove a book by barcode");
+            System.out.println("3. Remove a book by title");
+            System.out.println("4. Check out a book by title");
+            System.out.println("5. Check in a book by title");
+            System.out.println("6. List available books");
+            System.out.println("7. List all books");  // New option
+            System.out.println("8. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    // Add a new book
+                    System.out.print("Enter title: ");
+                    String title = scanner.nextLine();
+                    System.out.print("Enter author: ");
+                    String author = scanner.nextLine();
+                    System.out.print("Enter barcode: ");
+                    String barcode = scanner.nextLine();
+                    System.out.print("Enter genre: ");
+                    String genre = scanner.nextLine();
+
+                    Book newBook = new Book(title, author, barcode, genre);
+                    library.addBook(newBook);
+                    break;
+                case 2:
+                    // Remove a book by barcode
+                    System.out.print("Enter barcode to remove: ");
+                    String barcodeToRemove = scanner.nextLine();
+                    library.removeBookByBarcode(barcodeToRemove);
+                    break;
+                case 3:
+                    // Remove a book by title
+                    System.out.print("Enter title to remove: ");
+                    String titleToRemove = scanner.nextLine();
+                    library.removeBookByTitle(titleToRemove);
+                    break;
+                case 4:
+                    // Check out a book by title
+                    System.out.print("Enter title to check out: ");
+                    String titleToCheckOut = scanner.nextLine();
+                    library.checkOutBookByTitle(titleToCheckOut);
+                    break;
+                case 5:
+                    // Check in a book by title
+                    System.out.print("Enter title to check in: ");
+                    String titleToCheckIn = scanner.nextLine();
+                    library.checkInBookByTitle(titleToCheckIn);
+                    break;
+                case 6:
+                    // List available books
+                    library.displayAvailableBooks();
+                    break;
+                case 7:
+                    // List all books
+                    library.displayDatabase();
+                    break;
+                case 8:
+                    System.out.println("Exiting Library Management System. Goodbye!");
+                    saveBooksToFile(library, fileName); // Assuming you'll implement this later
+                    scanner.close();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private static void loadBooksFromFile(Library library, String fileName) {
+        // Implement code to load books from a file and add them to the library
+    }
+
+    private static void saveBooksToFile(Library library, String fileName) {
+        // Implement code to save books to a file
+    }
+}
+
+
+
+/**
+ * Daniel Jimenez
+ * 202410 Software Development I CEN-3024C-14835
+ * 10/12/2023
+ *
+ * Class: Library
+ * Description: The Library class contains the library's book collection and orchestrates the overall program objectives.
+ *              It manages operations related to the library's books, including addition, removal, check-out, and check-in.
+ */
+
+package Books;
+
+import java.util.ArrayList;
+
+public class Library {
+    private ArrayList<Book> books;
+
+    public Library() {
+        this.books = new ArrayList<>();
+    }
+
+    public void addBook(Book book) {
+        this.books.add(book);
+    }
+
+    public void removeBookByBarcode(String barcode) {
+        books.removeIf(book -> book.getBarcode().equals(barcode));
+    }
+
+    public void removeBookByTitle(String title) {
+        books.removeIf(book -> book.getTitle().equals(title));
+    }
+
+    public void checkOutBookByTitle(String title) {
+        for (Book book : books) {
+            if (book.getTitle().equals(title)) {
+                book.setStatus("Checked Out");
+                book.setDueDate("Two Weeks");  // Updated this line
+                break;
+            }
+        }
+    }
+
+    public void checkInBookByTitle(String title) {
+        for (Book book : books) {
+            if (book.getTitle().equals(title)) {
+                book.setStatus("Available");
+                book.setDueDate(null);
+                break;
+            }
+        }
+    }
+
+    public void displayDatabase() {
+        for (Book book : books) {
+            System.out.print(book.getTitle() + " by " + book.getAuthor() + " | Status: " + book.getStatus());
+
+            if (book.getDueDate() != null) {
+                System.out.print(" | Due Date: " + book.getDueDate());
+            }
+
+            System.out.println();
+        }
+    }
+
+    public void displayAvailableBooks() {
+        System.out.println("Available Books:");
+        for (Book book : getAvailableBooks()) {
+            System.out.print(book.getTitle() + " by " + book.getAuthor());
+
+            if (book.getDueDate() != null) {
+                System.out.print(" | Due Date: " + book.getDueDate());
+            }
+
+            System.out.println(" | Status: " + book.getStatus());
+        }
+    }
+
+    public ArrayList<Book> getAvailableBooks() {
+        ArrayList<Book> available = new ArrayList<>();
+        for (Book book : books) {
+            if ("Available".equals(book.getStatus())) {
+                available.add(book);
+            }
+        }
+        return available;
+    }
+}
+
+
+
+/**
+ * Daniel Jimenez
+ * 202410 Software Development I CEN-3024C-14835
+ * 10/12/2023
+ *
+ * Class: Main
+ * Description: Book class to represent individual books in the library.
+ */
+
+package Books;
+
+public class Book {
+    private String title;
+    private String author;
+    private String barcode;
+    private String genre;
+    private String status;
+    private String dueDate;
+
+    public Book(String title, String author, String barcode, String genre) {
+        this.title = title;
+        this.author = author;
+        this.barcode = barcode;
+        this.genre = genre;
+        this.status = "Null";
+        this.dueDate = null; // Setting to actual null
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(String dueDate) {
+        this.dueDate = dueDate;
+    }
+}
