@@ -274,3 +274,81 @@ public class Book {
         this.dueDate = dueDate;
     }
 }
+
+
+
+
+
+
+
+/**
+ * Daniel Jimenez
+ * 202410 Software Development I CEN-3024C-14835
+ * 10/19/2023
+ * Class: LMSApplication
+ * Description: Library Management System for removing and adding books by title and barcode.
+ *              This class contains the main method and handles user interactions.
+ */
+
+
+
+
+package Books;
+
+        import static org.junit.jupiter.api.Assertions.*;
+
+        import org.junit.jupiter.api.BeforeEach;
+        import org.junit.jupiter.api.Test;
+
+public class LibraryTest {
+
+    private Library library;
+
+    @BeforeEach
+    public void setUp() {
+        library = new Library();
+    }
+
+    @Test
+    public void testAddBook() {
+        Book book = new Book("Test Title", "Test Author", "12345", "Test Genre");
+        library.addBook(book);
+        assertEquals(0, library.getAvailableBooks().size());
+    }
+
+    @Test
+    public void testRemoveBookByBarcode() {
+        Book book = new Book("Test Title", "Test Author", "12345", "Test Genre");
+        library.addBook(book);
+        library.removeBookByBarcode("12345");
+        assertEquals(0, library.getAvailableBooks().size());
+    }
+
+    @Test
+    public void testRemoveBookByTitle() {
+        Book book = new Book("Test Title", "Test Author", "12345", "Test Genre");
+        library.addBook(book);
+        library.removeBookByTitle("Test Title");
+        assertEquals(0, library.getAvailableBooks().size());
+    }
+
+    @Test
+    public void testCheckOutBook() {
+        Book book = new Book("Test Title", "Test Author", "12345", "Test Genre");
+        library.addBook(book);
+        library.checkOutBookByTitle("Test Title");
+        assertNotNull(book.getDueDate());
+        assertEquals("Checked Out", book.getStatus());
+    }
+
+    @Test
+    public void testCheckInBook() {
+        Book book = new Book("Test Title", "Test Author", "12345", "Test Genre");
+        library.addBook(book);
+        library.checkOutBookByTitle("Test Title");
+        library.checkInBookByTitle("Test Title");
+        assertNull(book.getDueDate());
+        assertEquals("Available", book.getStatus());
+    }
+}
+
